@@ -1,9 +1,10 @@
 :root {
-  --bg: #f4f1ec;
-  --kaart: #ffffff;
-  --accent: #8a7f6d;
-  --accent-zacht: #c8c0b4;
-  --tekst: #2f2f2f;
+  --bg: #f5f3ef;
+  --surface: #ffffff;
+  --ink: #2b2b2b;
+  --muted: #7d7a73;
+  --accent: #8c7b68;
+  --line: #e2ddd5;
 }
 
 * {
@@ -12,88 +13,95 @@
 
 body {
   margin: 0;
-  font-family: "Helvetica Neue", sans-serif;
   background: var(--bg);
-  color: var(--tekst);
+  color: var(--ink);
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
-header {
-  text-align: center;
-  padding: 3rem 1rem 2rem;
+.site-header {
+  padding: 2.5rem 1.5rem 1.5rem;
 }
 
-h1 {
-  font-weight: 300;
-  letter-spacing: 2px;
+.brand h1 {
+  margin: 0;
+  font-weight: 400;
+  letter-spacing: 0.04em;
 }
 
-.subtitle {
-  font-size: 0.9rem;
-  color: #666;
+.brand-sub {
+  font-size: 0.8rem;
+  color: var(--muted);
 }
 
-.filters {
-  max-width: 1100px;
-  margin: 0 auto 2rem;
-  padding: 0 1rem;
+.shop-toolbar {
+  padding: 1rem 1.5rem;
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
 }
 
-.filters select {
-  padding: 0.5rem;
+.shop-toolbar select {
+  padding: 0.4rem 0.8rem;
   border-radius: 20px;
-  border: 1px solid var(--accent-zacht);
+  border: 1px solid var(--line);
+  background: white;
 }
 
-main {
-  max-width: 1100px;
-  margin: 0 auto;
-  padding: 1rem;
+.shop-grid {
+  padding: 2rem 1.5rem;
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-  gap: 1.5rem;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 2rem;
 }
 
-.stolp {
-  background: var(--kaart);
-  border-radius: 20px;
+.product {
+  background: var(--surface);
+  border-radius: 22px;
   padding: 1rem;
-  box-shadow: 0 10px 20px rgba(0,0,0,0.06);
-  cursor: pointer;
-  transition: transform 0.2s, box-shadow 0.2s;
+  box-shadow: 0 20px 40px rgba(0,0,0,0.04);
+  transition: transform 0.2s ease;
 }
 
-.stolp:hover {
+.product:hover {
   transform: translateY(-4px);
-  box-shadow: 0 15px 30px rgba(0,0,0,0.08);
 }
 
-.stolp.selected {
-  outline: 3px solid var(--accent);
+.product.selected {
+  outline: 2px solid var(--accent);
 }
 
-.stolp img {
+.product img {
   width: 100%;
-  border-radius: 14px;
+  border-radius: 16px;
   margin-bottom: 0.8rem;
 }
 
-.prijs {
-  font-weight: bold;
-  margin-bottom: 0.4rem;
+.product h2 {
+  font-size: 1rem;
+  font-weight: 500;
+  margin: 0.4rem 0;
 }
 
-.beschrijving {
-  font-size: 0.9rem;
-  color: #555;
+.product-meta {
+  font-size: 0.85rem;
+  color: var(--muted);
 }
 
-#actie {
+.product-price {
+  margin-top: 0.6rem;
+  font-weight: 600;
+}
+
+.sticky-action {
+  position: sticky;
+  bottom: 0;
+  background: rgba(245,243,239,0.9);
+  backdrop-filter: blur(6px);
+  padding: 1rem;
   text-align: center;
-  margin: 2rem;
 }
 
-#actie button {
-  padding: 0.8rem 1.2rem;
+.sticky-action button {
+  padding: 0.8rem 1.6rem;
   border-radius: 30px;
   border: none;
   background: var(--accent);
@@ -102,25 +110,25 @@ main {
   cursor: pointer;
 }
 
-#actie button:hover {
-  background: #6f6556;
+.sticky-action button:hover {
+  opacity: 0.9;
 }
 
 form {
   max-width: 420px;
-  margin: 2rem auto;
-  background: var(--kaart);
+  margin: 3rem auto;
+  background: var(--surface);
   padding: 2rem;
-  border-radius: 20px;
-  box-shadow: 0 10px 20px rgba(0,0,0,0.06);
+  border-radius: 22px;
 }
 
-form input, form button {
+form input,
+form button {
   width: 100%;
   padding: 0.7rem;
   margin-bottom: 0.8rem;
   border-radius: 20px;
-  border: 1px solid var(--accent-zacht);
+  border: 1px solid var(--line);
 }
 
 form button {
@@ -129,14 +137,9 @@ form button {
   border: none;
 }
 
-footer {
+.site-footer {
   text-align: center;
-  padding: 2rem;
-  font-size: 0.8rem;
-  color: #777;
-}
-.voorraad {
-  font-size: 0.8rem;
-  color: #7a6f60;
-  margin-top: 0.4rem;
+  padding: 3rem 1rem;
+  font-size: 0.75rem;
+  color: var(--muted);
 }
