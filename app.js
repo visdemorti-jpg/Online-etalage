@@ -1,94 +1,72 @@
 const SHEET_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQ-AiZSsevrWVln27kgIkvL65fD2FVzMQ_fnb850l-1kikcKIijx6Kpv51yQ7X-3tGJHq3lPdt7LTEZ/pub?output=csv";
 let items = [];
 
-// Stap 1: Data ophalen
+// Data ophalen met de eenvoudige methode
 fetch(SHEET_URL)
-  .then(response => response.text())
+  .then(res => res.text())
   .then(text => {
-    console.log("Data ontvangen van Google Sheets");
-    parseData(text);
-  })
-  .catch(err => console.error("Fout bij ophalen Sheet:", err));
+    const rows = text.split("\n").map(r => r.split(","));
+    const headers = rows[0].map(h => h.trim());
 
-// Stap 2: Data verwerken (eenvoudige maar sterke parser)
-function parseData(text) {
-  const rows = text.split(/\r?\n/).map(row => row.split(","));
-  const headers = rows[0].map(h => h.trim().toLowerCase()); // We maken alles kleine letters voor de zekerheid
+    items = rows.slice(1).map(r => {
+      let obj = {};
+      headers.forEach((h, i) => {
+        obj[h] = r[i] ? r[i].trim() : "";
+      });
+      return obj;
+    }).filter(i => i.id); // Filter lege rijen
 
-  items = rows.slice(1).map(row => {
-    const obj = {};
-    headers.forEach((header, i) => {
-      obj[header] = row[i] ? row[i].trim().replace(/^"|"$/g, '') : "";
-    });
-    return obj;
-  }).filter(item => item.id); // Alleen items met een ID tonen
+    initFilters();
+    render("all");
+  });
 
-  console.log("Geparste items:", items);
-  renderShop("all");
-  initFilters();
-}
-
-// Stap 3: Filters instellen
 function initFilters() {
   const select = document.getElementById("categorieFilter");
-  if (!select) return;
-
-  const categories = [...new Set(items.map(i => i.categorie))].filter(Boolean);
-  categories.forEach(cat => {
-    const opt = document.createElement("option");
-    opt.value = cat;
-    opt.textContent = cat;
-    select.appendChild(opt);
+  const cats = [...new Set(items.map(i => i.categorie))].filter(Boolean);
+  cats.forEach(c => {
+    const o = document.createElement("option");
+    o.value = o.textContent = c;
+    select.appendChild(o);
   });
-  select.onchange = () => renderShop(select.value);
+  select.onchange = () => render(select.value);
 }
 
-// Stap 4: Producten op het scherm zetten
-function renderShop(filter) {
+function render(filter) {
   const grid = document.getElementById("etalage");
-  if (!grid) return;
   grid.innerHTML = "";
 
   items.forEach(item => {
-    // Check of item getoond moet worden
-    if (item.zichtbaar === "X") return;
-    if (item.gereserveerd === "JA") return;
+    if (item.zichtbaar === "X" || item.gereserveerd === "JA") return;
     if (parseInt(item["op voorraad"]) <= 0) return;
     if (filter !== "all" && item.categorie !== filter) return;
 
-    const article = document.createElement("article");
-    article.className = "product";
-    article.innerHTML = `
-      <div class="product-image-wrapper">
-        <img src="${item["video/foto"]}" alt="${item.naam}" onerror="this.src='https://via.placeholder.com/400x500?text=Afbeelding+niet+gevonden'">
-      </div>
-      <div class="product-info">
-        <h2>${item.naam}</h2>
-        <div class="product-price">€ ${item.prijs}</div>
-      </div>
+    const div = document.createElement("div");
+    div.className = "product-card";
+    div.innerHTML = `
+      <img src="${item["video/foto"]}" loading="lazy">
+      <h2>${item.naam}</h2>
+      <div class="price">€ ${item.prijs}</div>
     `;
-    
-    article.onclick = () => openModal(item);
-    grid.appendChild(article);
+    div.onclick = () => openDetails(item);
+    grid.appendChild(div);
   });
 }
 
-// Stap 5: Modal (Detailweergave)
-function openModal(item) {
+function openDetails(item) {
   const modal = document.getElementById("productModal");
-  const content = document.getElementById("modalContent");
+  const body = document.getElementById("modalBody");
   
-  content.innerHTML = `
-    <div class="modal-media">
-        <img src="${item["video/foto"]}" alt="${item.naam}">
+  body.innerHTML = `
+    <div class="modal-image">
+      <img src="${item["video/foto"]}" style="width:100%;">
     </div>
-    <div class="modal-details">
-        <span class="category-label">${item.categorie}</span>
-        <h1>${item.naam}</h1>
-        <div class="price-large">€ ${item.prijs}</div>
-        <div class="description">${item.beschrijving || 'Handgemaakt natuurkunstwerk van Huisje Botanica.'}</div>
-        <div class="stock-info">Voorraad: ${item["op voorraad"]}</div>
-        <button class="primary" onclick="reserveer('${item.id}')">Reserveer dit werk</button>
+    <div class="modal-info">
+      <p class="tagline">${item.categorie}</p>
+      <h1>${item.naam}</h1>
+      <p class="price" style="font-size:1.5rem;">€ ${item.prijs}</p>
+      <div class="modal-description">${item.beschrijving}</div>
+      <p style="font-size:0.8rem; color:gray;">Beschikbaar: ${item["op voorraad"]}</p>
+      <button class="btn-reserve" onclick="reserveer('${item.id}')">Reserveer dit werk</button>
     </div>
   `;
   modal.style.display = "block";
@@ -101,7 +79,7 @@ function closeModal() {
 }
 
 function reserveer(id) {
-  const geselecteerd = items.find(i => i.id === id);
-  localStorage.setItem("stolp", JSON.stringify(geselecteerd));
+  const item = items.find(i => i.id === id);
+  localStorage.setItem("stolp", JSON.stringify(item));
   window.location.href = "reserveren.html";
 }
