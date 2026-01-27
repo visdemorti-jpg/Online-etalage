@@ -9,9 +9,15 @@
 <body>
 
 <header class="site-header">
-    <div class="container">
-        <img src="https://portfoliohuisjebotanica.wordpress.com/wp-content/uploads/2026/01/cropped-logo-factuur.png" alt="Huisje Botanica" class="logo">
-        <p class="tagline">Handgemaakte natuurkunst</p>
+    <div class="container header-grid">
+        <div class="header-spacer"></div>
+        <div class="header-center">
+            <img src="https://portfoliohuisjebotanica.wordpress.com/wp-content/uploads/2026/01/cropped-logo-factuur.png" alt="Huisje Botanica" class="logo">
+            <p class="tagline">Handgemaakte natuurkunst</p>
+        </div>
+        <div class="header-cart">
+            <button id="cartToggle" onclick="toggleCart()">Winkelmand (<span id="cartCount">0</span>)</button>
+        </div>
     </div>
 </header>
 
@@ -24,15 +30,26 @@
 </section>
 
 <main class="container">
-    <div id="etalage" class="product-grid">
-        </div>
+    <div id="etalage" class="product-grid"></div>
 </main>
+
+<div id="cartDrawer" class="cart-drawer">
+    <div class="cart-header">
+        <h2>Winkelmand</h2>
+        <button onclick="toggleCart()" class="close-cart">Sluiten</button>
+    </div>
+    <div id="cartItems" class="cart-items-list">
+        </div>
+    <div class="cart-footer">
+        <div class="cart-total">Totaal: <span id="cartTotal">€ 0,00</span></div>
+        <button class="btn-reserve" onclick="goToCheckout()">Bestelling afronden</button>
+    </div>
+</div>
 
 <div id="productModal" class="modal">
     <div class="modal-content">
         <button class="close-button" onclick="closeModal()">Terug naar overzicht</button>
-        <div id="modalBody" class="modal-grid">
-            </div>
+        <div id="modalBody" class="modal-grid"></div>
     </div>
 </div>
 
