@@ -52,6 +52,12 @@ select { border: 1px solid var(--line); background: var(--white); padding: 0.6re
 
 #floatingCart:hover { transform: scale(1.05); background: #000; }
 .cart-label { font-size: 0.6rem; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: -2px; }
+.cart-icon {
+    width: 24px;   /* Grootte van het icoon */
+    height: 24px;
+    fill: currentColor; /* Neemt de witte tekstkleur over */
+    margin-bottom: 4px; /* Ruimte tussen icoon en het getal */
+}
 #cartCount { font-size: 1.2rem; font-weight: 500; }
 
 /* Cart Drawer */
