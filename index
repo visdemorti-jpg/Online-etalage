@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8">
+  <title>Vlinderwereldjes – Beschikbare Stolpen</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header>
+  <h1>Vlinderwereldjes</h1>
+  <p class="subtitle">Unieke stolpen opgebouwd uit natuurlijke materialen</p>
+</header>
+
+<section class="filters">
+  <label for="categorieFilter">Categorie:</label>
+  <select id="categorieFilter">
+    <option value="all">Alle</option>
+  </select>
+</section>
+
+<main id="etalage"></main>
+
+<footer>
+  <p>© Vlinderwereldjes</p>
+</footer>
+
+<script src="app.js"></script>
+</body>
+</html>
