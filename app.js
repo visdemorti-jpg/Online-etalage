@@ -2,7 +2,7 @@ const SHEET_URL =
   "https://docs.google.com/spreadsheets/d/e/2PACX-1vQ-AiZSsevrWVln27kgIkvL65fD2FVzMQ_fnb850l-1kikcKIijx6Kpv51yQ7X-3tGJHq3lPdt7LTEZ/pub?output=csv";
 
 let items = [];
-let geselecteerdID = null;
+let geselecteerd = null;
 
 fetch(SHEET_URL)
   .then(r => r.text())
@@ -20,63 +20,54 @@ fetch(SHEET_URL)
 
 function initFilters() {
   const select = document.getElementById("categorieFilter");
-  const cats = [...new Set(items.map(i => i.categorie))];
-
-  cats.forEach(c => {
+  [...new Set(items.map(i => i.categorie))].forEach(cat => {
     const o = document.createElement("option");
-    o.value = c;
-    o.textContent = c;
+    o.value = cat;
+    o.textContent = cat;
     select.appendChild(o);
   });
-
   select.onchange = () => render(select.value);
 }
 
 function render(cat) {
-  const etalage = document.getElementById("etalage");
+  const grid = document.getElementById("etalage");
   const actie = document.getElementById("actie");
-  etalage.innerHTML = "";
+  grid.innerHTML = "";
   actie.innerHTML = "";
 
   items.forEach(item => {
     if (item.zichtbaar === "X") return;
-    if (cat !== "all" && item.categorie !== cat) return;
     if (Number(item["op voorraad"]) <= 0) return;
+    if (cat !== "all" && item.categorie !== cat) return;
 
-    const div = document.createElement("div");
-    div.className = "stolp";
-
-    div.innerHTML = `
+    const card = document.createElement("article");
+    card.className = "product";
+    card.innerHTML = `
       <img src="${item["video/foto"]}">
       <h2>${item.naam}</h2>
-      <div class="prijs">€${item.prijs}</div>
-      <div class="beschrijving">${item.beschrijving}</div>
-      <div class="voorraad">
-        Op voorraad: ${item["op voorraad"]}
-      </div>
+      <div class="product-meta">${item.categorie}</div>
+      <div class="product-price">€${item.prijs}</div>
     `;
 
-    div.onclick = () => {
-      document.querySelectorAll(".stolp").forEach(s => s.classList.remove("selected"));
-      div.classList.add("selected");
-      geselecteerdID = item.ID;
-      toonKnop();
+    card.onclick = () => {
+      document.querySelectorAll(".product").forEach(p => p.classList.remove("selected"));
+      card.classList.add("selected");
+      geselecteerd = item;
+      toonActie();
     };
 
-    etalage.appendChild(div);
+    grid.appendChild(card);
   });
 }
 
-function toonKnop() {
+function toonActie() {
   const actie = document.getElementById("actie");
   actie.innerHTML = "";
 
   const btn = document.createElement("button");
-  btn.textContent = "Verder met reserveren 🦋";
-
+  btn.textContent = "Ga verder naar reserveren 🦋";
   btn.onclick = () => {
-    const stolp = items.find(i => i.ID === geselecteerdID);
-    localStorage.setItem("stolp", JSON.stringify(stolp));
+    localStorage.setItem("stolp", JSON.stringify(geselecteerd));
     window.location.href = "reserveren.html";
   };
 
