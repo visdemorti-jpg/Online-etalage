@@ -34,21 +34,26 @@ function initFilters() {
 
 function render(cat) {
   const etalage = document.getElementById("etalage");
+  const actie = document.getElementById("actie");
   etalage.innerHTML = "";
-  document.getElementById("actie").innerHTML = "";
+  actie.innerHTML = "";
 
   items.forEach(item => {
     if (item.zichtbaar === "X") return;
     if (cat !== "all" && item.categorie !== cat) return;
-    if (item.gereserveerd === "JA") return;
+    if (Number(item["op voorraad"]) <= 0) return;
 
     const div = document.createElement("div");
     div.className = "stolp";
+
     div.innerHTML = `
       <img src="${item["video/foto"]}">
       <h2>${item.naam}</h2>
       <div class="prijs">€${item.prijs}</div>
       <div class="beschrijving">${item.beschrijving}</div>
+      <div class="voorraad">
+        Op voorraad: ${item["op voorraad"]}
+      </div>
     `;
 
     div.onclick = () => {
