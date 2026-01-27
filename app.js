@@ -2,7 +2,7 @@ const SHEET_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQ-AiZSsevrWV
 let items = [];
 let cart = JSON.parse(localStorage.getItem("h_botanica_cart")) || [];
 
-// Initialisatie
+// Data ophalen
 fetch(SHEET_URL)
   .then(res => res.text())
   .then(text => {
@@ -50,7 +50,6 @@ function renderShop(filter) {
   });
 }
 
-// Modal Logica met Aantal Selector
 let tempQty = 1;
 function openDetails(item) {
   tempQty = 1;
@@ -61,12 +60,12 @@ function openDetails(item) {
   body.innerHTML = `
     <div class="modal-image"><img src="${item["video/foto"]}" style="width:100%;"></div>
     <div class="modal-info">
-      <p style="text-transform:uppercase; font-size:0.7rem; color:gray;">${item.categorie}</p>
-      <h1 style="font-weight:400; margin-top:0;">${item.naam}</h1>
-      <p style="font-size:1.3rem;">€ ${item.prijs}</p>
-      <div style="margin: 2rem 0; font-size:0.9rem;">${item.beschrijving}</div>
+      <p style="text-transform:uppercase; font-size:0.65rem; color:gray; letter-spacing:0.1em;">${item.categorie}</p>
+      <h1 style="font-weight:400; margin-top:0; letter-spacing:-0.02em;">${item.naam}</h1>
+      <p style="font-size:1.3rem; margin-bottom:2rem;">€ ${item.prijs}</p>
+      <div style="margin: 2rem 0; font-size:0.9rem; color:#444; line-height:1.8;">${item.beschrijving}</div>
       
-      <p style="font-size:0.8rem;">Aantal (Beschikbaar: ${maxStock})</p>
+      <p style="font-size:0.75rem; text-transform:uppercase; letter-spacing:0.05em;">Aantal (Beschikbaar: ${maxStock})</p>
       <div class="qty-selector">
         <button onclick="updateTempQty(-1)">-</button>
         <span id="qtyVal">1</span>
@@ -85,7 +84,6 @@ function updateTempQty(change, max) {
   document.getElementById("qtyVal").textContent = tempQty;
 }
 
-// Winkelmand Logica
 function addToCart(id) {
   const item = items.find(i => i.id === id);
   const existing = cart.find(c => c.id === id);
@@ -99,7 +97,7 @@ function addToCart(id) {
 
   saveAndUpdate();
   closeModal();
-  toggleCart(true); // Open mandje automatisch
+  toggleCart(true); 
 }
 
 function saveAndUpdate() {
@@ -122,13 +120,13 @@ function updateCartUI() {
     itemsCount += item.qty;
 
     list.innerHTML += `
-      <div style="margin-bottom: 1.5rem; display: flex; gap: 1rem; align-items: center;">
-        <img src="${item["video/foto"]}" style="width:60px; height:60px; object-fit:cover;">
+      <div style="margin-bottom: 2rem; display: flex; gap: 1.5rem; align-items: center;">
+        <img src="${item["video/foto"]}" style="width:70px; height:70px; object-fit:cover;">
         <div style="flex:1">
-          <div style="font-size:0.85rem; text-transform:uppercase;">${item.naam}</div>
+          <div style="font-size:0.8rem; text-transform:uppercase; letter-spacing:0.05em; font-weight:500;">${item.naam}</div>
           <div style="font-size:0.8rem; color:gray;">${item.qty} x € ${item.prijs}</div>
         </div>
-        <button onclick="removeFromCart(${index})" style="background:none; border:none; cursor:pointer; font-size:0.7rem; color:red;">Verwijder</button>
+        <button onclick="removeFromCart(${index})" style="background:none; border:none; cursor:pointer; font-size:0.65rem; color:#cc0000; text-transform:uppercase; letter-spacing:0.05em;">Wis</button>
       </div>
     `;
   });
