@@ -2,7 +2,7 @@
 <html lang="nl">
 <head>
     <meta charset="UTF-8">
-    <title>Huisje Botanica | Handgemaakte Natuurkunst</title>
+    <title>Huisje Botanica</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="style.css">
 </head>
@@ -10,27 +10,30 @@
 
 <header class="site-header">
     <img src="https://portfoliohuisjebotanica.wordpress.com/wp-content/uploads/2026/01/cropped-logo-factuur.png" alt="Huisje Botanica" class="logo">
-    <span class="brand-sub">Handgemaakte Natuurkunst</span>
+    <p class="tagline">Handgemaakte natuurkunst</p>
 </header>
 
-<div class="shop-container">
-    <section class="shop-toolbar">
+<nav class="shop-nav">
+    <div class="container">
         <select id="categorieFilter">
             <option value="all">Alle collecties</option>
         </select>
-    </section>
+    </div>
+</nav>
 
-    <main class="shop-grid" id="etalage"></main>
-</div>
+<main class="container">
+    <div id="etalage" class="product-grid"></div>
+</main>
 
 <div id="productModal" class="modal">
-    <div style="margin-bottom: 2rem;"><button onclick="closeModal()" style="background:none; border:none; cursor:pointer; font-size:1rem;">← Sluiten</button></div>
-    <div class="modal-content" id="modalContent"></div>
+    <div class="modal-content">
+        <button class="close-button" onclick="closeModal()">Sluiten</button>
+        <div id="modalBody" class="modal-grid"></div>
+    </div>
 </div>
 
-<footer class="site-footer" style="padding: 5rem 2rem; border-top: 1px solid var(--line); text-align: center; font-size: 0.8rem; color: var(--muted);">
-    <p>© Huisje Botanica · Professionaliteit in natuurkunst</p>
-    <p>Verzending binnen 2-4 werkdagen</p>
+<footer class="site-footer">
+    <p>&copy; 2026 Huisje Botanica | Professionaliteit in natuurkunst</p>
 </footer>
 
 <script src="app.js"></script>
