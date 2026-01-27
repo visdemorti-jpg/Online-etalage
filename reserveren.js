@@ -6,6 +6,9 @@ const container = document.getElementById("reservering");
 if (!stolp) {
   container.innerHTML = "<p>Geen stolp geselecteerd.</p>";
 } else {
+  const maxAantal = Number(stolp["op voorraad"]);
+  const heeftAantal = maxAantal > 1;
+
   container.innerHTML = `
     <div class="stolp">
       <img src="${stolp["video/foto"]}">
@@ -16,7 +19,23 @@ if (!stolp) {
     <form id="form">
       <input id="naam" placeholder="Naam" required>
       <input id="email" type="email" placeholder="E-mail" required>
-      <button>Reserveer deze stolp 🦋</button>
+
+      ${
+        heeftAantal
+          ? `
+          <label>Hoeveelheid</label>
+          <input 
+            id="aantal" 
+            type="number" 
+            min="1" 
+            max="${maxAantal}" 
+            value="1"
+            required>
+          `
+          : `<input type="hidden" id="aantal" value="1">`
+      }
+
+      <button>Reserveer 🦋</button>
     </form>
   `;
 
@@ -28,7 +47,8 @@ if (!stolp) {
       body: JSON.stringify({
         id: stolp.ID,
         naam: document.getElementById("naam").value,
-        email: document.getElementById("email").value
+        email: document.getElementById("email").value,
+        aantal: Number(document.getElementById("aantal").value)
       })
     }).then(() => {
       alert("Dank je wel 🦋 Je reservering is ontvangen.");
