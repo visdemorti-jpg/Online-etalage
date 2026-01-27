@@ -2,38 +2,44 @@
 <html lang="nl">
 <head>
     <meta charset="UTF-8">
-    <title>Huisje Botanica</title>
+    <title>Huisje Botanica | Handgemaakte Natuurkunst</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
 <header class="site-header">
-    <img src="https://portfoliohuisjebotanica.wordpress.com/wp-content/uploads/2026/01/cropped-logo-factuur.png" alt="Huisje Botanica" class="logo">
-    <p class="tagline">Handgemaakte natuurkunst</p>
+    <div class="container">
+        <img src="https://portfoliohuisjebotanica.wordpress.com/wp-content/uploads/2026/01/cropped-logo-factuur.png" alt="Huisje Botanica" class="logo">
+        <p class="tagline">Handgemaakte natuurkunst</p>
+    </div>
 </header>
 
-<nav class="shop-nav">
+<section class="shop-filter">
     <div class="container">
         <select id="categorieFilter">
             <option value="all">Alle collecties</option>
         </select>
     </div>
-</nav>
+</section>
 
 <main class="container">
-    <div id="etalage" class="product-grid"></div>
+    <div id="etalage" class="product-grid">
+        </div>
 </main>
 
 <div id="productModal" class="modal">
     <div class="modal-content">
-        <button class="close-button" onclick="closeModal()">Sluiten</button>
-        <div id="modalBody" class="modal-grid"></div>
+        <button class="close-button" onclick="closeModal()">Terug naar overzicht</button>
+        <div id="modalBody" class="modal-grid">
+            </div>
     </div>
 </div>
 
 <footer class="site-footer">
-    <p>&copy; 2026 Huisje Botanica | Professionaliteit in natuurkunst</p>
+    <div class="container">
+        <p>&copy; 2026 Huisje Botanica | Met aandacht gemaakt</p>
+    </div>
 </footer>
 
 <script src="app.js"></script>
