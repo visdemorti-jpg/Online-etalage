@@ -1,146 +1,108 @@
+/* Voeg dit toe aan style.css en verwijder de oude stijlen die hiermee botsen */
+
 :root {
-  --bg: #faf9f6;        /* Warm wit / Bone */
-  --surface: #ffffff;
-  --ink: #1a1a1a;       /* Bijna zwart voor sterke tekst */
-  --muted: #666666;
-  --accent: #4a4a4a;    /* Donkergrijs voor knoppen */
-  --line: #e5e5e5;
-  --font-main: 'Inter', system-ui, -apple-system, sans-serif;
+  --bg: #f8f7f4;
+  --text: #1a1a1a;
+  --muted-text: #6b6b6b;
+  --border: #e2e2e2;
+  --accent: #2d2d2d; /* Japandi charcoal */
 }
 
-body {
-  margin: 0;
-  background: var(--bg);
-  color: var(--ink);
-  font-family: var(--font-main);
-  line-height: 1.6;
-  -webkit-font-smoothing: antialiased;
-}
-
-/* Header & Logo */
-.site-header {
-  padding: 4rem 2rem 2rem;
-  text-align: center;
-  border-bottom: 1px solid var(--line);
-  background: white;
-}
-
-.logo {
-  max-width: 180px;
-  margin-bottom: 1rem;
-}
-
-.brand-sub {
-  display: block;
-  text-transform: uppercase;
-  letter-spacing: 0.15em;
-  font-size: 0.7rem;
-  color: var(--muted);
-  margin-top: 0.5rem;
-}
-
-/* Shop Layout */
-.shop-container {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 0 2rem;
-}
-
-.shop-toolbar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 2rem 0;
-}
-
-select {
-  border: 1px solid var(--line);
-  padding: 0.6rem 1rem;
-  background: white;
-  font-size: 0.9rem;
-  border-radius: 0; /* Strakke hoeken */
-  appearance: none;
-  cursor: pointer;
-}
-
-/* Product Kaarten */
 .shop-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-  gap: 3rem;
-  margin-bottom: 5rem;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 4rem 2rem;
+  padding: 2rem 0;
 }
 
 .product {
   cursor: pointer;
-  transition: opacity 0.3s ease;
-}
-
-.product:hover {
-  opacity: 0.8;
 }
 
 .product-image-wrapper {
-  background: #f2f2f2;
-  aspect-ratio: 1 / 1;
+  aspect-ratio: 4 / 5;
+  background-color: #f2f2f2;
+  margin-bottom: 1.5rem;
   overflow: hidden;
-  margin-bottom: 1.2rem;
 }
 
 .product img {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.product:hover img {
+  transform: scale(1.03);
 }
 
 .product h2 {
-  font-size: 1.1rem;
+  font-size: 0.95rem;
   font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
   margin: 0 0 0.5rem 0;
-  letter-spacing: -0.01em;
 }
 
 .product-price {
-  font-size: 0.95rem;
-  color: var(--muted);
+  font-size: 0.9rem;
+  color: var(--muted-text);
 }
 
-/* Modal / Detail view voor die "echte shop" ervaring */
+/* Modal styling voor product details */
 .modal {
+  display: none;
   position: fixed;
   top: 0; left: 0; width: 100%; height: 100%;
   background: white;
-  z-index: 1000;
-  display: none;
+  z-index: 2000;
   padding: 2rem;
   overflow-y: auto;
 }
 
 .modal-content {
-  max-width: 1000px;
-  margin: 0 auto;
+  max-width: 1100px;
+  margin: 4rem auto;
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 4rem;
+  grid-template-columns: 1.2fr 1fr;
+  gap: 5rem;
 }
 
-@media (max-width: 768px) {
-  .modal-content { grid-template-columns: 1fr; }
+.category-label {
+  text-transform: uppercase;
+  font-size: 0.7rem;
+  letter-spacing: 0.2em;
+  color: var(--muted-text);
+  display: block;
+  margin-bottom: 1rem;
 }
 
-button.primary {
-  background: var(--ink);
+.price-large {
+  font-size: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.description {
+  line-height: 1.8;
+  color: #333;
+  margin-bottom: 3rem;
+  font-size: 0.95rem;
+}
+
+.primary {
+  background: var(--accent);
   color: white;
   border: none;
-  padding: 1.2rem 2.5rem;
+  padding: 1.2rem 2rem;
+  width: 100%;
+  cursor: pointer;
+  font-family: inherit;
   text-transform: uppercase;
   letter-spacing: 0.1em;
   font-size: 0.8rem;
-  cursor: pointer;
-  width: 100%;
-  transition: background 0.2s;
 }
 
-button.primary:hover {
-  background: #333;
+@media (max-width: 800px) {
+  .modal-content { grid-template-columns: 1fr; gap: 2rem; }
 }
