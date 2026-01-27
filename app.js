@@ -2,7 +2,7 @@ const SHEET_URL =
   "https://docs.google.com/spreadsheets/d/e/2PACX-1vQ-AiZSsevrWVln27kgIkvL65fD2FVzMQ_fnb850l-1kikcKIijx6Kpv51yQ7X-3tGJHq3lPdt7LTEZ/pub?output=csv";
 
 let items = [];
-let geselecteerd = null;
+let geselecteerdID = null;
 
 fetch(SHEET_URL)
   .then(r => r.text())
@@ -54,7 +54,7 @@ function render(cat) {
     div.onclick = () => {
       document.querySelectorAll(".stolp").forEach(s => s.classList.remove("selected"));
       div.classList.add("selected");
-      geselecteerd = item;
+      geselecteerdID = item.ID;
       toonKnop();
     };
 
@@ -68,8 +68,10 @@ function toonKnop() {
 
   const btn = document.createElement("button");
   btn.textContent = "Verder met reserveren 🦋";
+
   btn.onclick = () => {
-    localStorage.setItem("stolp", JSON.stringify(geselecteerd));
+    const stolp = items.find(i => i.ID === geselecteerdID);
+    localStorage.setItem("stolp", JSON.stringify(stolp));
     window.location.href = "reserveren.html";
   };
 
