@@ -1,75 +1,77 @@
-const SHEET_URL =
-  "https://docs.google.com/spreadsheets/d/e/2PACX-1vQ-AiZSsevrWVln27kgIkvL65fD2FVzMQ_fnb850l-1kikcKIijx6Kpv51yQ7X-3tGJHq3lPdt7LTEZ/pub?output=csv";
-
+const SHEET_URL = "JOUW_CSV_URL_HIER";
 let items = [];
-let geselecteerd = null;
 
-fetch(SHEET_URL)
-  .then(r => r.text())
-  .then(text => {
-    const rows = text.split("\n").map(r => r.split(","));
-    const headers = rows[0].map(h => h.trim());
+async function loadShop() {
+    const response = await fetch(SHEET_URL);
+    const text = await response.text();
+    
+    // Betere parsing voor velden met komma's
+    const rows = text.split("\n").map(line => line.match(/(".*?"|[^",\s]+)(?=\s*,|\s*$)/g));
+    const headers = rows[0].map(h => h.trim().replace(/"/g, ''));
 
-    items = rows.slice(1).map(r =>
-      Object.fromEntries(headers.map((h, i) => [h, r[i]?.trim()]))
-    );
+    items = rows.slice(1).map(r => {
+        if (!r) return null;
+        return Object.fromEntries(headers.map((h, i) => [h, r[i]?.replace(/"/g, '').trim()]));
+    }).filter(i => i && i.id);
 
-    initFilters();
-    render("all");
-  });
-
-function initFilters() {
-  const select = document.getElementById("categorieFilter");
-  [...new Set(items.map(i => i.categorie))].forEach(cat => {
-    const o = document.createElement("option");
-    o.value = cat;
-    o.textContent = cat;
-    select.appendChild(o);
-  });
-  select.onchange = () => render(select.value);
+    render();
+    fillFilters();
 }
 
-function render(cat) {
-  const grid = document.getElementById("etalage");
-  const actie = document.getElementById("actie");
-  grid.innerHTML = "";
-  actie.innerHTML = "";
+function render(filter = "all") {
+    const grid = document.getElementById("etalage");
+    grid.innerHTML = "";
 
-  items.forEach(item => {
-    if (item.zichtbaar === "X") return;
-    if (Number(item["op voorraad"]) <= 0) return;
-    if (cat !== "all" && item.categorie !== cat) return;
+    items.forEach(item => {
+        if (item.zichtbaar === "X" || Number(item["op voorraad"]) <= 0) return;
+        if (filter !== "all" && item.categorie !== filter) return;
 
-    const card = document.createElement("article");
-    card.className = "product";
-    card.innerHTML = `
-      <img src="${item["video/foto"]}">
-      <h2>${item.naam}</h2>
-      <div class="product-meta">${item.categorie}</div>
-      <div class="product-price">€${item.prijs}</div>
+        const el = document.createElement("article");
+        el.className = "product";
+        el.innerHTML = `
+            <div class="product-image-wrapper">
+                <img src="${item["video/foto"]}" loading="lazy">
+            </div>
+            <h2>${item.naam}</h2>
+            <div class="product-price">€ ${item.prijs}</div>
+        `;
+        el.onclick = () => showDetails(item);
+        grid.appendChild(el);
+    });
+}
+
+function showDetails(item) {
+    const modal = document.getElementById("productModal");
+    const content = document.getElementById("modalContent");
+    
+    content.innerHTML = `
+        <div class="product-image-wrapper">
+            <img src="${item["video/foto"]}">
+        </div>
+        <div>
+            <h1 style="font-size: 2rem; margin-bottom: 1rem;">${item.naam}</h1>
+            <p style="color: var(--muted); margin-bottom: 2rem;">${item.categorie}</p>
+            <div style="font-size: 1.5rem; margin-bottom: 2rem;">€ ${item.prijs}</div>
+            <p style="margin-bottom: 2rem; white-space: pre-line;">${item.beschrijving || 'Geen beschrijving beschikbaar.'}</p>
+            <button class="primary" onclick="goToReserve('${item.id}')">Reserveer dit werk</button>
+            <p style="font-size: 0.75rem; color: var(--muted); margin-top: 1rem;">
+                Beschikbaar: ${item["op voorraad"]} exemplaar/exemplaren
+            </p>
+        </div>
     `;
-
-    card.onclick = () => {
-      document.querySelectorAll(".product").forEach(p => p.classList.remove("selected"));
-      card.classList.add("selected");
-      geselecteerd = item;
-      toonActie();
-    };
-
-    grid.appendChild(card);
-  });
+    modal.style.display = "block";
+    document.body.style.overflow = "hidden"; // Geen scroll in de achtergrond
 }
 
-function toonActie() {
-  const actie = document.getElementById("actie");
-  actie.innerHTML = "";
+function closeModal() {
+    document.getElementById("productModal").style.display = "none";
+    document.body.style.overflow = "auto";
+}
 
-  const btn = document.createElement("button");
-  btn.textContent = "Ga verder naar reserveren 🦋";
-  btn.onclick = () => {
-    localStorage.setItem("stolp", JSON.stringify(geselecteerd));
+function goToReserve(id) {
+    const item = items.find(i => i.id === id);
+    localStorage.setItem("selected_product", JSON.stringify(item));
     window.location.href = "reserveren.html";
-  };
-
-  actie.appendChild(btn);
 }
+
+loadShop();
