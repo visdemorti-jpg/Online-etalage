@@ -1,44 +1,182 @@
 :root {
-    --bg: #f9f8f6;
-    --text: #1a1a1a;
-    --muted: #707070;
-    --line: #e8e6e1;
+    --bg: #faf9f6;
     --white: #ffffff;
+    --ink: #1a1a1a;
+    --muted: #666666;
+    --line: #e5e3df;
+    --accent: #2d2d2d;
 }
+
+* { box-sizing: border-box; }
 
 body {
     margin: 0;
-    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
     background: var(--bg);
-    color: var(--text);
-    line-height: 1.5;
+    color: var(--ink);
+    line-height: 1.6;
 }
 
-.container { max-width: 1100px; margin: 0 auto; padding: 0 2rem; }
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 1.5rem;
+}
 
-.site-header { padding: 5rem 2rem 3rem; text-align: center; background: var(--white); }
-.logo { max-width: 220px; margin-bottom: 1rem; }
-.tagline { text-transform: uppercase; letter-spacing: 0.2em; font-size: 0.75rem; color: var(--muted); }
+/* Header & Logo */
+.site-header {
+    padding: 4rem 0 2rem;
+    text-align: center;
+    background: var(--white);
+    border-bottom: 1px solid var(--line);
+}
 
-.shop-nav { padding: 2rem 0; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); margin-bottom: 4rem; text-align: center; }
-select { border: 1px solid var(--line); padding: 0.5rem 1rem; background: var(--white); font-size: 0.85rem; outline: none; }
+.logo {
+    max-width: 200px;
+    height: auto;
+    margin-bottom: 1rem;
+}
 
-.product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 4rem 2.5rem; }
+.tagline {
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    font-size: 0.7rem;
+    color: var(--muted);
+    margin: 0;
+}
 
-.product-card { cursor: pointer; }
-.product-card img { width: 100%; aspect-ratio: 1/1; object-fit: cover; background: #eee; margin-bottom: 1.5rem; }
-.product-card h2 { font-size: 1rem; font-weight: 400; margin: 0; text-transform: uppercase; letter-spacing: 0.05em; }
-.product-card .price { color: var(--muted); font-size: 0.9rem; margin-top: 0.5rem; }
+/* Filter Bar */
+.shop-filter {
+    padding: 1.5rem 0;
+    background: var(--white);
+    border-bottom: 1px solid var(--line);
+    margin-bottom: 3rem;
+    text-align: center;
+}
 
-/* Modal Styling */
-.modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--white); z-index: 1000; overflow-y: auto; }
-.modal-content { max-width: 1000px; margin: 5rem auto; padding: 0 2rem; position: relative; }
-.close-button { position: absolute; top: -3rem; right: 2rem; border: none; background: none; cursor: pointer; text-transform: uppercase; font-size: 0.75rem; letter-spacing: 0.1em; }
+select {
+    border: 1px solid var(--line);
+    background: var(--white);
+    padding: 0.6rem 1.2rem;
+    font-size: 0.85rem;
+    outline: none;
+    cursor: pointer;
+}
 
-.modal-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; }
-.modal-info h1 { font-size: 2rem; font-weight: 400; margin: 0 0 1rem; }
-.modal-description { margin: 2rem 0; color: #444; white-space: pre-wrap; }
+/* Product Grid - DIT ZORGT VOOR DE SCHAAL */
+.product-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 3.5rem 2rem;
+}
 
-.btn-reserve { background: var(--text); color: var(--white); border: none; padding: 1.2rem; width: 100%; cursor: pointer; text-transform: uppercase; letter-spacing: 0.1em; font-size: 0.8rem; }
+.product-card {
+    cursor: pointer;
+    transition: opacity 0.3s ease;
+}
 
-@media (max-width: 768px) { .modal-grid { grid-template-columns: 1fr; } }
+.product-card:hover {
+    opacity: 0.8;
+}
+
+/* Afbeelding op schaal (Vierkant 1:1) */
+.product-image-wrapper {
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    overflow: hidden;
+    background: #eeeeee;
+    margin-bottom: 1rem;
+}
+
+.product-image-wrapper img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Snijdt de foto bij zodat deze altijd het vierkant vult */
+    display: block;
+}
+
+.product-card h2 {
+    font-size: 0.95rem;
+    font-weight: 500;
+    margin: 0;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.product-card .price {
+    font-size: 0.9rem;
+    color: var(--muted);
+    margin-top: 0.4rem;
+}
+
+/* Modal / Detail View */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: var(--white);
+    z-index: 1000;
+    overflow-y: auto;
+}
+
+.modal-content {
+    max-width: 1000px;
+    margin: 4rem auto;
+    padding: 0 2rem;
+}
+
+.close-button {
+    background: none;
+    border: none;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    cursor: pointer;
+    margin-bottom: 2rem;
+    padding: 0;
+    color: var(--muted);
+}
+
+.modal-grid {
+    display: grid;
+    grid-template-columns: 1.2fr 1fr;
+    gap: 4rem;
+}
+
+.modal-info h1 {
+    font-size: 2rem;
+    font-weight: 400;
+    margin: 0 0 1rem 0;
+}
+
+.modal-description {
+    margin: 2rem 0;
+    font-size: 0.95rem;
+    color: #333;
+    white-space: pre-wrap;
+}
+
+.btn-reserve {
+    background: var(--accent);
+    color: var(--white);
+    border: none;
+    padding: 1.2rem;
+    width: 100%;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    font-size: 0.8rem;
+    cursor: pointer;
+}
+
+.site-footer {
+    padding: 5rem 0;
+    text-align: center;
+    font-size: 0.75rem;
+    color: var(--muted);
+    border-top: 1px solid var(--line);
+    margin-top: 5rem;
+}
+
+@media (max-width: 768px) {
+    .modal-grid { grid-template-columns: 1fr; }
+}
