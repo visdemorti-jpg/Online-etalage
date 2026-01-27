@@ -1,66 +1,104 @@
-const SHEET_URL = "JOUW_CSV_URL_HIER";
+const SHEET_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQ-AiZSsevrWVln27kgIkvL65fD2FVzMQ_fnb850l-1kikcKIijx6Kpv51yQ7X-3tGJHq3lPdt7LTEZ/pub?output=csv";
 let items = [];
 
-async function loadShop() {
-    const response = await fetch(SHEET_URL);
-    const text = await response.text();
+// Robuuste CSV parser die rekening houdt met komma's in teksten (zoals beschrijvingen)
+function parseCSV(text) {
+    const lines = text.split(/\r?\n/);
+    if (lines.length === 0) return [];
     
-    // Betere parsing voor velden met komma's
-    const rows = text.split("\n").map(line => line.match(/(".*?"|[^",\s]+)(?=\s*,|\s*$)/g));
-    const headers = rows[0].map(h => h.trim().replace(/"/g, ''));
-
-    items = rows.slice(1).map(r => {
-        if (!r) return null;
-        return Object.fromEntries(headers.map((h, i) => [h, r[i]?.replace(/"/g, '').trim()]));
-    }).filter(i => i && i.id);
-
-    render();
-    fillFilters();
+    // Pak de headers en maak ze schoon
+    const headers = lines[0].split(',').map(h => h.trim().replace(/"/g, ''));
+    
+    return lines.slice(1).map(line => {
+        // Deze regex splitst op komma's, maar negeert komma's binnen aanhalingstekens
+        const values = line.match(/(".*?"|[^",\s]+)(?=\s*,|\s*$)/g);
+        if (!values || values.length < headers.length) return null;
+        
+        const obj = {};
+        headers.forEach((header, i) => {
+            let val = values[i] ? values[i].trim().replace(/^"|"$/g, '') : "";
+            obj[header] = val;
+        });
+        return obj;
+    }).filter(item => item !== null && item.id);
 }
 
-function render(filter = "all") {
+async function initApp() {
+    try {
+        const response = await fetch(SHEET_URL);
+        const csvText = await response.text();
+        items = parseCSV(csvText);
+        
+        renderShop("all");
+        populateCategories();
+    } catch (error) {
+        console.error("Fout bij laden shop:", error);
+    }
+}
+
+function populateCategories() {
+    const select = document.getElementById("categorieFilter");
+    const categories = [...new Set(items.map(i => i.categorie))].filter(Boolean);
+    
+    categories.forEach(cat => {
+        const opt = document.createElement("option");
+        opt.value = cat;
+        opt.textContent = cat;
+        select.appendChild(opt);
+    });
+
+    select.onchange = (e) => renderShop(e.target.value);
+}
+
+function renderShop(filter) {
     const grid = document.getElementById("etalage");
     grid.innerHTML = "";
 
     items.forEach(item => {
-        if (item.zichtbaar === "X" || Number(item["op voorraad"]) <= 0) return;
+        // Filters: niet zichtbaar of geen voorraad = niet tonen
+        if (item.zichtbaar === "X" || item.gereserveerd === "JA") return;
+        if (parseInt(item["op voorraad"]) <= 0) return;
         if (filter !== "all" && item.categorie !== filter) return;
 
-        const el = document.createElement("article");
-        el.className = "product";
-        el.innerHTML = `
+        const card = document.createElement("article");
+        card.className = "product";
+        card.innerHTML = `
             <div class="product-image-wrapper">
-                <img src="${item["video/foto"]}" loading="lazy">
+                <img src="${item["video/foto"]}" alt="${item.naam}" loading="lazy">
             </div>
-            <h2>${item.naam}</h2>
-            <div class="product-price">€ ${item.prijs}</div>
+            <div class="product-info">
+                <h2>${item.naam}</h2>
+                <div class="product-price">€ ${item.prijs}</div>
+            </div>
         `;
-        el.onclick = () => showDetails(item);
-        grid.appendChild(el);
+        card.onclick = () => openProduct(item);
+        grid.appendChild(card);
     });
 }
 
-function showDetails(item) {
+function openProduct(item) {
     const modal = document.getElementById("productModal");
     const content = document.getElementById("modalContent");
     
     content.innerHTML = `
-        <div class="product-image-wrapper">
-            <img src="${item["video/foto"]}">
+        <div class="modal-media">
+            <img src="${item["video/foto"]}" alt="${item.naam}">
         </div>
-        <div>
-            <h1 style="font-size: 2rem; margin-bottom: 1rem;">${item.naam}</h1>
-            <p style="color: var(--muted); margin-bottom: 2rem;">${item.categorie}</p>
-            <div style="font-size: 1.5rem; margin-bottom: 2rem;">€ ${item.prijs}</div>
-            <p style="margin-bottom: 2rem; white-space: pre-line;">${item.beschrijving || 'Geen beschrijving beschikbaar.'}</p>
-            <button class="primary" onclick="goToReserve('${item.id}')">Reserveer dit werk</button>
-            <p style="font-size: 0.75rem; color: var(--muted); margin-top: 1rem;">
-                Beschikbaar: ${item["op voorraad"]} exemplaar/exemplaren
-            </p>
+        <div class="modal-details">
+            <span class="category-label">${item.categorie}</span>
+            <h1>${item.naam}</h1>
+            <div class="price-large">€ ${item.prijs}</div>
+            <div class="description">${item.beschrijving || 'Geen beschrijving beschikbaar.'}</div>
+            
+            <div class="stock-info">Beschikbaar: ${item["op voorraad"]} stuk(s)</div>
+            
+            <button class="primary" onclick="startReservation('${item.id}')">
+                Reserveer dit object
+            </button>
         </div>
     `;
     modal.style.display = "block";
-    document.body.style.overflow = "hidden"; // Geen scroll in de achtergrond
+    document.body.style.overflow = "hidden";
 }
 
 function closeModal() {
@@ -68,10 +106,11 @@ function closeModal() {
     document.body.style.overflow = "auto";
 }
 
-function goToReserve(id) {
+function startReservation(id) {
     const item = items.find(i => i.id === id);
     localStorage.setItem("selected_product", JSON.stringify(item));
     window.location.href = "reserveren.html";
 }
 
-loadShop();
+// Start de app
+initApp();
