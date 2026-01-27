@@ -1,108 +1,44 @@
-/* Voeg dit toe aan style.css en verwijder de oude stijlen die hiermee botsen */
-
 :root {
-  --bg: #f8f7f4;
-  --text: #1a1a1a;
-  --muted-text: #6b6b6b;
-  --border: #e2e2e2;
-  --accent: #2d2d2d; /* Japandi charcoal */
+    --bg: #f9f8f6;
+    --text: #1a1a1a;
+    --muted: #707070;
+    --line: #e8e6e1;
+    --white: #ffffff;
 }
 
-.shop-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: 4rem 2rem;
-  padding: 2rem 0;
+body {
+    margin: 0;
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.5;
 }
 
-.product {
-  cursor: pointer;
-}
+.container { max-width: 1100px; margin: 0 auto; padding: 0 2rem; }
 
-.product-image-wrapper {
-  aspect-ratio: 4 / 5;
-  background-color: #f2f2f2;
-  margin-bottom: 1.5rem;
-  overflow: hidden;
-}
+.site-header { padding: 5rem 2rem 3rem; text-align: center; background: var(--white); }
+.logo { max-width: 220px; margin-bottom: 1rem; }
+.tagline { text-transform: uppercase; letter-spacing: 0.2em; font-size: 0.75rem; color: var(--muted); }
 
-.product img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
-}
+.shop-nav { padding: 2rem 0; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); margin-bottom: 4rem; text-align: center; }
+select { border: 1px solid var(--line); padding: 0.5rem 1rem; background: var(--white); font-size: 0.85rem; outline: none; }
 
-.product:hover img {
-  transform: scale(1.03);
-}
+.product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 4rem 2.5rem; }
 
-.product h2 {
-  font-size: 0.95rem;
-  font-weight: 500;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  margin: 0 0 0.5rem 0;
-}
+.product-card { cursor: pointer; }
+.product-card img { width: 100%; aspect-ratio: 1/1; object-fit: cover; background: #eee; margin-bottom: 1.5rem; }
+.product-card h2 { font-size: 1rem; font-weight: 400; margin: 0; text-transform: uppercase; letter-spacing: 0.05em; }
+.product-card .price { color: var(--muted); font-size: 0.9rem; margin-top: 0.5rem; }
 
-.product-price {
-  font-size: 0.9rem;
-  color: var(--muted-text);
-}
+/* Modal Styling */
+.modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--white); z-index: 1000; overflow-y: auto; }
+.modal-content { max-width: 1000px; margin: 5rem auto; padding: 0 2rem; position: relative; }
+.close-button { position: absolute; top: -3rem; right: 2rem; border: none; background: none; cursor: pointer; text-transform: uppercase; font-size: 0.75rem; letter-spacing: 0.1em; }
 
-/* Modal styling voor product details */
-.modal {
-  display: none;
-  position: fixed;
-  top: 0; left: 0; width: 100%; height: 100%;
-  background: white;
-  z-index: 2000;
-  padding: 2rem;
-  overflow-y: auto;
-}
+.modal-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; }
+.modal-info h1 { font-size: 2rem; font-weight: 400; margin: 0 0 1rem; }
+.modal-description { margin: 2rem 0; color: #444; white-space: pre-wrap; }
 
-.modal-content {
-  max-width: 1100px;
-  margin: 4rem auto;
-  display: grid;
-  grid-template-columns: 1.2fr 1fr;
-  gap: 5rem;
-}
+.btn-reserve { background: var(--text); color: var(--white); border: none; padding: 1.2rem; width: 100%; cursor: pointer; text-transform: uppercase; letter-spacing: 0.1em; font-size: 0.8rem; }
 
-.category-label {
-  text-transform: uppercase;
-  font-size: 0.7rem;
-  letter-spacing: 0.2em;
-  color: var(--muted-text);
-  display: block;
-  margin-bottom: 1rem;
-}
-
-.price-large {
-  font-size: 1.5rem;
-  margin-bottom: 2rem;
-}
-
-.description {
-  line-height: 1.8;
-  color: #333;
-  margin-bottom: 3rem;
-  font-size: 0.95rem;
-}
-
-.primary {
-  background: var(--accent);
-  color: white;
-  border: none;
-  padding: 1.2rem 2rem;
-  width: 100%;
-  cursor: pointer;
-  font-family: inherit;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-  font-size: 0.8rem;
-}
-
-@media (max-width: 800px) {
-  .modal-content { grid-template-columns: 1fr; gap: 2rem; }
-}
+@media (max-width: 768px) { .modal-grid { grid-template-columns: 1fr; } }
