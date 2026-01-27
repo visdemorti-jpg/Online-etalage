@@ -27,11 +27,13 @@
     <div id="etalage" class="product-grid"></div>
 </main>
 
-<button id="floatingCart" onclick="toggleCart()">
-    <span class="cart-label">Mand</span>
+<button id="floatingCart" onclick="toggleCart()" aria-label="Winkelmand">
+    <svg class="cart-icon" viewBox="0 0 24 24" width="24" height="24" style="transform: scale(1.1);">
+        <path fill="currentColor" d="M12,2C12,2 11,2.19 10.31,3.06C9.31,4.3 9.06,5.94 9.58,7.5C7.91,6.69 5.79,6.31 3.86,7.36C2,8.38 1,10.31 1,12C1,13.7 1.87,16 3.68,16.89C5.5,17.8 7.61,17.43 9.28,16.57C8.87,18.04 9.13,19.68 10.08,20.91C10.74,21.79 12,22 12,22C12,22 13.25,21.79 13.91,20.91C14.86,19.68 15.13,18.04 14.71,16.57C16.38,17.43 18.49,17.8 20.31,16.89C22.13,16 23,13.7 23,12C23,10.31 22,8.38 20.13,7.36C18.2,6.31 16.08,6.69 14.41,7.5C14.94,5.94 14.68,4.3 13.68,3.06C13,2.19 12,2 12,2M11,12C11,12.55 11.45,13 12,13C12.55,13 13,12.55 13,12C13,11.45 12.55,11 12,11C11.45,11 11,11.45 11,12Z" />
+    </svg>
     <span id="cartCount">0</span>
 </button>
-
+    
 <div id="cartDrawer" class="cart-drawer">
     <div class="cart-header">
         <h2>Winkelmand</h2>
