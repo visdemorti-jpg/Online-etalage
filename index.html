@@ -9,15 +9,9 @@
 <body>
 
 <header class="site-header">
-    <div class="container header-grid">
-        <div class="header-spacer"></div>
-        <div class="header-center">
-            <img src="https://portfoliohuisjebotanica.wordpress.com/wp-content/uploads/2026/01/cropped-logo-factuur.png" alt="Huisje Botanica" class="logo">
-            <p class="tagline">Handgemaakte natuurkunst</p>
-        </div>
-        <div class="header-cart">
-            <button id="cartToggle" onclick="toggleCart()">Winkelmand (<span id="cartCount">0</span>)</button>
-        </div>
+    <div class="container">
+        <img src="https://portfoliohuisjebotanica.wordpress.com/wp-content/uploads/2026/01/cropped-logo-factuur.png" alt="Huisje Botanica" class="logo">
+        <p class="tagline">Handgemaakte natuurkunst</p>
     </div>
 </header>
 
@@ -33,6 +27,11 @@
     <div id="etalage" class="product-grid"></div>
 </main>
 
+<button id="floatingCart" onclick="toggleCart()">
+    <span class="cart-label">Mand</span>
+    <span id="cartCount">0</span>
+</button>
+
 <div id="cartDrawer" class="cart-drawer">
     <div class="cart-header">
         <h2>Winkelmand</h2>
@@ -41,7 +40,10 @@
     <div id="cartItems" class="cart-items-list">
         </div>
     <div class="cart-footer">
-        <div class="cart-total">Totaal: <span id="cartTotal">€ 0,00</span></div>
+        <div class="cart-total">
+            <span>Totaal</span>
+            <span id="cartTotal">€ 0,00</span>
+        </div>
         <button class="btn-reserve" onclick="goToCheckout()">Bestelling afronden</button>
     </div>
 </div>
