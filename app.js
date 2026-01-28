@@ -2,7 +2,6 @@ const SHEET_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQ-AiZSsevrWV
 let items = [];
 let cart = JSON.parse(localStorage.getItem("h_botanica_cart")) || [];
 
-// 1. Data inladen en direct opschonen
 fetch(SHEET_URL)
   .then(res => res.text())
   .then(text => {
@@ -11,46 +10,22 @@ fetch(SHEET_URL)
     items = rows.slice(1).map(r => {
       let obj = {};
       headers.forEach((h, i) => obj[h] = r[i] ? r[i].trim() : "");
-      
-      // FORCEER GETALLEN BIJ IMPORT
-      const totaalVoorraad = parseInt(obj["op voorraad"]) || 0;
-      const reedsGereserveerd = parseInt(obj["gereserveerd"]) || 0;
-      obj.actueleVoorraad = totaalVoorraad - reedsGereserveerd;
-      
+      obj.actueleVoorraad = (parseInt(obj["op voorraad"]) || 0) - (parseInt(obj["gereserveerd"]) || 0);
       return obj;
     }).filter(i => i.id);
-
-    initFilters();
     renderShop("all");
     updateCartUI();
   });
-
-function initFilters() {
-    const select = document.getElementById("categorieFilter");
-    const categories = [...new Set(items.map(i => i.categorie))].filter(Boolean);
-    categories.forEach(cat => {
-        const opt = document.createElement("option");
-        opt.value = opt.textContent = cat;
-        select.appendChild(opt);
-    });
-    select.onchange = (e) => renderShop(e.target.value);
-}
 
 function renderShop(filter) {
     const grid = document.getElementById("etalage");
     grid.innerHTML = "";
     items.forEach(item => {
-        if (item.zichtbaar === "X") return; 
-        if (item.actueleVoorraad <= 0) return; 
-        if (filter !== "all" && item.categorie !== filter) return;
-
+        if (item.zichtbaar === "X" || item.actueleVoorraad <= 0) return;
         const div = document.createElement("div");
         div.className = "product-card";
-        div.innerHTML = `
-          <div class="product-image-wrapper"><img src="${item["video/foto"]}" loading="lazy"></div>
-          <h2>${item.naam}</h2>
-          <div class="price">€ ${item.prijs}</div>
-        `;
+        div.innerHTML = `<div class="product-image-wrapper"><img src="${item["video/foto"]}"></div>
+                         <h2>${item.naam}</h2><div class="price">€ ${item.prijs}</div>`;
         div.onclick = () => openDetails(item);
         grid.appendChild(div);
     });
@@ -61,116 +36,37 @@ function openDetails(item) {
     tempQty = 1;
     const modal = document.getElementById("productModal");
     const body = document.getElementById("modalBody");
-    const maxStock = parseInt(item.actueleVoorraad);
-
     body.innerHTML = `
-      <div class="modal-image"><img src="${item["video/foto"]}" style="width:100%;"></div>
-      <div class="modal-info">
-        <p style="text-transform:uppercase; font-size:0.65rem; color:gray; letter-spacing:0.1em;">${item.categorie}</p>
-        <h1 style="font-weight:400; margin-top:0;">${item.naam}</h1>
-        <p style="font-size:1.3rem; margin-bottom:2rem;">€ ${item.prijs}</p>
-        <div style="margin: 2rem 0; font-size:0.9rem; color:#444; line-height:1.8;">${item.beschrijving}</div>
-        
-        <p style="font-size:0.75rem; text-transform:uppercase; letter-spacing:0.05em;">Beschikbaar: ${maxStock}</p>
-        <div class="qty-selector">
-          <button onclick="updateTempQty(-1)">-</button>
-          <span id="qtyVal">1</span>
-          <button onclick="updateTempQty(1, ${maxStock})">+</button>
-        </div>
-        
-        <button class="btn-reserve" onclick="addToCart('${item.id}')">In winkelmand</button>
-      </div>
-    `;
+        <div class="modal-image"><img src="${item["video/foto"]}" style="width:100%;"></div>
+        <div class="modal-info">
+            <h1>${item.naam}</h1><p>€ ${item.prijs}</p>
+            <div class="qty-selector">
+                <button onclick="updateTempQty(-1)">-</button><span id="qtyVal">1</span>
+                <button onclick="updateTempQty(1, ${item.actueleVoorraad})">+</button>
+            </div>
+            <button class="btn-reserve" onclick="addToCart('${item.id}')">In winkelmand</button>
+        </div>`;
     modal.style.display = "block";
-    document.body.style.overflow = "hidden";
 }
 
-function updateTempQty(change, max) {
-    tempQty = Math.max(1, Math.min(tempQty + change, max || 1));
-    document.getElementById("qtyVal").textContent = tempQty;
-}
+function updateTempQty(c, m) { tempQty = Math.max(1, Math.min(tempQty + c, m)); document.getElementById("qtyVal").textContent = tempQty; }
 
-// 2. Aangepaste addToCart die getallen forceert
 function addToCart(id) {
     const item = items.find(i => i.id === id);
     const existing = cart.find(c => c.id === id);
-    
-    // Zorg voor pure getallen voor opslag
-    const maxStock = Number(item.actueleVoorraad) || 0;
-    const gekozenAantal = Number(tempQty) || 1;
-
-    if (existing) {
-        existing.qty = Number(existing.qty); // Bestaande waarde forceren naar getal
-        existing.qty = Math.min(existing.qty + gekozenAantal, maxStock);
-    } else {
-        // Kopieer item en forceer numerieke velden
-        cart.push({ 
-            ...item, 
-            qty: gekozenAantal,
-            actueleVoorraad: maxStock 
-        });
-    }
-
+    if (existing) existing.qty = Math.min(Number(existing.qty) + tempQty, item.actueleVoorraad);
+    else cart.push({ ...item, qty: tempQty });
     saveAndUpdate();
-    closeModal();
-    toggleCart(true); 
-}
-
-function saveAndUpdate() {
-    localStorage.setItem("h_botanica_cart", JSON.stringify(cart));
-    updateCartUI();
-}
-
-function updateCartUI() {
-    const list = document.getElementById("cartItems");
-    const count = document.getElementById("cartCount");
-    const totalEl = document.getElementById("cartTotal");
-    
-    if(!list) return;
-    list.innerHTML = "";
-    let total = 0;
-    let itemsCount = 0;
-
-    cart.forEach((item, index) => {
-        const prijsSchoon = parseFloat(item.prijs.toString().replace(',', '.')) || 0;
-        const itemTotal = prijsSchoon * Number(item.qty);
-        total += itemTotal;
-        itemsCount += Number(item.qty);
-
-        list.innerHTML += `
-          <div style="margin-bottom: 2rem; display: flex; gap: 1.5rem; align-items: center;">
-            <img src="${item["video/foto"]}" style="width:70px; height:70px; object-fit:cover;">
-            <div style="flex:1">
-              <div style="font-size:0.8rem; text-transform:uppercase; letter-spacing:0.05em; font-weight:500;">${item.naam}</div>
-              <div style="font-size:0.8rem; color:gray;">${item.qty} x € ${item.prijs}</div>
-            </div>
-            <button onclick="removeFromCart(${index})" style="background:none; border:none; cursor:pointer; font-size:0.65rem; color:#cc0000; text-transform:uppercase;">Wis</button>
-          </div>
-        `;
-    });
-
-    if(count) count.textContent = itemsCount;
-    if(totalEl) totalEl.textContent = `€ ${total.toFixed(2).replace('.', ',')}`;
-}
-
-function removeFromCart(index) {
-    cart.splice(index, 1);
-    saveAndUpdate();
-}
-
-function toggleCart(forceOpen) {
-    const drawer = document.getElementById("cartDrawer");
-    if(!drawer) return;
-    if (forceOpen) drawer.classList.add("open");
-    else drawer.classList.toggle("open");
-}
-
-function closeModal() {
     document.getElementById("productModal").style.display = "none";
-    document.body.style.overflow = "auto";
 }
 
-function goToCheckout() {
-    if (cart.length === 0) return alert("Je winkelmand is leeg.");
-    window.location.href = "reserveren.html";
+function saveAndUpdate() { localStorage.setItem("h_botanica_cart", JSON.stringify(cart)); updateCartUI(); }
+function updateCartUI() { 
+    document.getElementById("cartCount").textContent = cart.reduce((s, i) => s + Number(i.qty), 0);
+    const list = document.getElementById("cartItems");
+    list.innerHTML = "";
+    cart.forEach(i => list.innerHTML += `<div>${i.naam} (${i.qty}x)</div>`);
 }
+function toggleCart() { document.getElementById("cartDrawer").classList.toggle("open"); }
+function goToCheckout() { window.location.href = "reserveren.html"; }
+function closeModal() { document.getElementById("productModal").style.display = "none"; }
