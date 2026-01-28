@@ -2,6 +2,7 @@ const SHEET_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQ-AiZSsevrWV
 let items = [];
 let cart = JSON.parse(localStorage.getItem("h_botanica_cart")) || [];
 
+// 1. Data inladen en direct opschonen
 fetch(SHEET_URL)
   .then(res => res.text())
   .then(text => {
@@ -11,10 +12,9 @@ fetch(SHEET_URL)
       let obj = {};
       headers.forEach((h, i) => obj[h] = r[i] ? r[i].trim() : "");
       
-      // LOGICA VOOR VOORRAAD BEREKENING
+      // FORCEER GETALLEN BIJ IMPORT
       const totaalVoorraad = parseInt(obj["op voorraad"]) || 0;
       const reedsGereserveerd = parseInt(obj["gereserveerd"]) || 0;
-      // We voegen een nieuw veld toe 'actueleVoorraad'
       obj.actueleVoorraad = totaalVoorraad - reedsGereserveerd;
       
       return obj;
@@ -40,7 +40,6 @@ function renderShop(filter) {
     const grid = document.getElementById("etalage");
     grid.innerHTML = "";
     items.forEach(item => {
-        // Alleen tonen als zichtbaar is aangevinkt EN er echt nog voorraad is
         if (item.zichtbaar === "X") return; 
         if (item.actueleVoorraad <= 0) return; 
         if (filter !== "all" && item.categorie !== filter) return;
@@ -62,8 +61,7 @@ function openDetails(item) {
     tempQty = 1;
     const modal = document.getElementById("productModal");
     const body = document.getElementById("modalBody");
-    // Gebruik hier de berekende actuele voorraad
-    const maxStock = item.actueleVoorraad;
+    const maxStock = parseInt(item.actueleVoorraad);
 
     body.innerHTML = `
       <div class="modal-image"><img src="${item["video/foto"]}" style="width:100%;"></div>
@@ -92,15 +90,25 @@ function updateTempQty(change, max) {
     document.getElementById("qtyVal").textContent = tempQty;
 }
 
+// 2. Aangepaste addToCart die getallen forceert
 function addToCart(id) {
     const item = items.find(i => i.id === id);
     const existing = cart.find(c => c.id === id);
-    const maxStock = item.actueleVoorraad;
+    
+    // Zorg voor pure getallen voor opslag
+    const maxStock = Number(item.actueleVoorraad) || 0;
+    const gekozenAantal = Number(tempQty) || 1;
 
     if (existing) {
-        existing.qty = Math.min(existing.qty + tempQty, maxStock);
+        existing.qty = Number(existing.qty); // Bestaande waarde forceren naar getal
+        existing.qty = Math.min(existing.qty + gekozenAantal, maxStock);
     } else {
-        cart.push({ ...item, qty: tempQty });
+        // Kopieer item en forceer numerieke velden
+        cart.push({ 
+            ...item, 
+            qty: gekozenAantal,
+            actueleVoorraad: maxStock 
+        });
     }
 
     saveAndUpdate();
@@ -118,14 +126,16 @@ function updateCartUI() {
     const count = document.getElementById("cartCount");
     const totalEl = document.getElementById("cartTotal");
     
+    if(!list) return;
     list.innerHTML = "";
     let total = 0;
     let itemsCount = 0;
 
     cart.forEach((item, index) => {
-        const itemTotal = parseFloat(item.prijs) * item.qty;
+        const prijsSchoon = parseFloat(item.prijs.toString().replace(',', '.')) || 0;
+        const itemTotal = prijsSchoon * Number(item.qty);
         total += itemTotal;
-        itemsCount += item.qty;
+        itemsCount += Number(item.qty);
 
         list.innerHTML += `
           <div style="margin-bottom: 2rem; display: flex; gap: 1.5rem; align-items: center;">
@@ -139,8 +149,8 @@ function updateCartUI() {
         `;
     });
 
-    count.textContent = itemsCount;
-    totalEl.textContent = `€ ${total.toFixed(2).replace('.', ',')}`;
+    if(count) count.textContent = itemsCount;
+    if(totalEl) totalEl.textContent = `€ ${total.toFixed(2).replace('.', ',')}`;
 }
 
 function removeFromCart(index) {
@@ -150,6 +160,7 @@ function removeFromCart(index) {
 
 function toggleCart(forceOpen) {
     const drawer = document.getElementById("cartDrawer");
+    if(!drawer) return;
     if (forceOpen) drawer.classList.add("open");
     else drawer.classList.toggle("open");
 }
