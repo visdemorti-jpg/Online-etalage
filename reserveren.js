@@ -1,4 +1,4 @@
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwcPrlEMrSccYCTfgjELqwUZQu_FWar2HaecDvm7-qH9iz18Mi6QCqoQWokcpWEihWfKg/exec"; // Plak hier je URL van de Google Script-implementatie
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx3qdHpa5rby_h5pg6UN_90RFIVTOQ1eXee4mod51TeKnsBJxNC_jli0cT92YTsk9ieJA/exec"; // Plak hier je URL van de Google Script-implementatie
 const STORAGE_KEY = "h_botanica_cart";
 
 let cart = [];
