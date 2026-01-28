@@ -71,9 +71,8 @@ document.getElementById("reserveerForm").addEventListener("submit", async functi
         });
 
         // C. Afronden
-        alert(`Bedankt ${klantNaam}! Uw reservatie (${orderNr}) is ontvangen. U ontvangt een bevestiging per mail.`);
         localStorage.removeItem(STORAGE_KEY);
-        window.location.href = "index.html";
+        window.location.href = "bedankt.html";
 
     } catch (error) {
         console.error(error);
