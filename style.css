@@ -35,7 +35,7 @@ body {
 .tagline {
     font-size: 1rem; /* Grotere tekst zoals gevraagd */
     text-transform: uppercase;
-    letter-spacing: 0.2em;
+    letter-spacing: 0.1em;
     color: var(--muted);
     margin-top: 1rem;
     font-weight: 300;
