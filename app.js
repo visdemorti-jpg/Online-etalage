@@ -2,7 +2,6 @@ const SHEET_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQ-AiZSsevrWV
 let items = [];
 let cart = JSON.parse(localStorage.getItem("h_botanica_cart")) || [];
 
-// Data inladen
 fetch(SHEET_URL)
   .then(res => res.text())
   .then(text => {
@@ -11,6 +10,13 @@ fetch(SHEET_URL)
     items = rows.slice(1).map(r => {
       let obj = {};
       headers.forEach((h, i) => obj[h] = r[i] ? r[i].trim() : "");
+      
+      // LOGICA VOOR VOORRAAD BEREKENING
+      const totaalVoorraad = parseInt(obj["op voorraad"]) || 0;
+      const reedsGereserveerd = parseInt(obj["gereserveerd"]) || 0;
+      // We voegen een nieuw veld toe 'actueleVoorraad'
+      obj.actueleVoorraad = totaalVoorraad - reedsGereserveerd;
+      
       return obj;
     }).filter(i => i.id);
 
@@ -34,8 +40,9 @@ function renderShop(filter) {
     const grid = document.getElementById("etalage");
     grid.innerHTML = "";
     items.forEach(item => {
-        if (item.zichtbaar === "X" || item.gereserveerd === "JA") return;
-        if (parseInt(item["op voorraad"]) <= 0) return;
+        // Alleen tonen als zichtbaar is aangevinkt EN er echt nog voorraad is
+        if (item.zichtbaar === "X") return; 
+        if (item.actueleVoorraad <= 0) return; 
         if (filter !== "all" && item.categorie !== filter) return;
 
         const div = document.createElement("div");
@@ -55,7 +62,8 @@ function openDetails(item) {
     tempQty = 1;
     const modal = document.getElementById("productModal");
     const body = document.getElementById("modalBody");
-    const maxStock = parseInt(item["op voorraad"]);
+    // Gebruik hier de berekende actuele voorraad
+    const maxStock = item.actueleVoorraad;
 
     body.innerHTML = `
       <div class="modal-image"><img src="${item["video/foto"]}" style="width:100%;"></div>
@@ -65,7 +73,7 @@ function openDetails(item) {
         <p style="font-size:1.3rem; margin-bottom:2rem;">€ ${item.prijs}</p>
         <div style="margin: 2rem 0; font-size:0.9rem; color:#444; line-height:1.8;">${item.beschrijving}</div>
         
-        <p style="font-size:0.75rem; text-transform:uppercase; letter-spacing:0.05em;">Aantal (Beschikbaar: ${maxStock})</p>
+        <p style="font-size:0.75rem; text-transform:uppercase; letter-spacing:0.05em;">Beschikbaar: ${maxStock}</p>
         <div class="qty-selector">
           <button onclick="updateTempQty(-1)">-</button>
           <span id="qtyVal">1</span>
@@ -80,14 +88,14 @@ function openDetails(item) {
 }
 
 function updateTempQty(change, max) {
-    tempQty = Math.max(1, Math.min(tempQty + change, max || 99));
+    tempQty = Math.max(1, Math.min(tempQty + change, max || 1));
     document.getElementById("qtyVal").textContent = tempQty;
 }
 
 function addToCart(id) {
     const item = items.find(i => i.id === id);
     const existing = cart.find(c => c.id === id);
-    const maxStock = parseInt(item["op voorraad"]);
+    const maxStock = item.actueleVoorraad;
 
     if (existing) {
         existing.qty = Math.min(existing.qty + tempQty, maxStock);
