@@ -2,6 +2,7 @@ const SHEET_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQ-AiZSsevrWV
 let items = [];
 let cart = JSON.parse(localStorage.getItem("h_botanica_cart")) || [];
 
+// Producten inladen
 fetch(SHEET_URL)
   .then(res => res.text())
   .then(text => {
@@ -13,12 +14,13 @@ fetch(SHEET_URL)
       obj.actueleVoorraad = (parseInt(obj["op voorraad"]) || 0) - (parseInt(obj["gereserveerd"]) || 0);
       return obj;
     }).filter(i => i.id);
-    renderShop("all");
+    renderShop();
     updateCartUI();
   });
 
-function renderShop(filter) {
+function renderShop() {
     const grid = document.getElementById("etalage");
+    if(!grid) return;
     grid.innerHTML = "";
     items.forEach(item => {
         if (item.zichtbaar === "X" || item.actueleVoorraad <= 0) return;
@@ -32,7 +34,7 @@ function renderShop(filter) {
 }
 
 let tempQty = 1;
-function openDetails(item) {
+window.openDetails = function(item) {
     tempQty = 1;
     const modal = document.getElementById("productModal");
     const body = document.getElementById("modalBody");
@@ -47,26 +49,39 @@ function openDetails(item) {
             <button class="btn-reserve" onclick="addToCart('${item.id}')">In winkelmand</button>
         </div>`;
     modal.style.display = "block";
-}
+};
 
-function updateTempQty(c, m) { tempQty = Math.max(1, Math.min(tempQty + c, m)); document.getElementById("qtyVal").textContent = tempQty; }
+window.updateTempQty = function(c, m) { 
+    tempQty = Math.max(1, Math.min(tempQty + c, m)); 
+    document.getElementById("qtyVal").textContent = tempQty; 
+};
 
-function addToCart(id) {
+window.addToCart = function(id) {
     const item = items.find(i => i.id === id);
     const existing = cart.find(c => c.id === id);
-    if (existing) existing.qty = Math.min(Number(existing.qty) + tempQty, item.actueleVoorraad);
-    else cart.push({ ...item, qty: tempQty });
+    if (existing) {
+        existing.qty = Math.min(Number(existing.qty) + tempQty, item.actueleVoorraad);
+    } else {
+        cart.push({ ...item, qty: tempQty });
+    }
     saveAndUpdate();
-    document.getElementById("productModal").style.display = "none";
+    closeModal();
+};
+
+function saveAndUpdate() {
+    localStorage.setItem("h_botanica_cart", JSON.stringify(cart));
+    updateCartUI();
 }
 
-function saveAndUpdate() { localStorage.setItem("h_botanica_cart", JSON.stringify(cart)); updateCartUI(); }
-function updateCartUI() { 
-    document.getElementById("cartCount").textContent = cart.reduce((s, i) => s + Number(i.qty), 0);
+function updateCartUI() {
+    const countEl = document.getElementById("cartCount");
+    if(countEl) countEl.textContent = cart.reduce((s, i) => s + Number(i.qty), 0);
     const list = document.getElementById("cartItems");
-    list.innerHTML = "";
-    cart.forEach(i => list.innerHTML += `<div>${i.naam} (${i.qty}x)</div>`);
+    if(list) {
+        list.innerHTML = cart.map(i => `<div style="padding:10px 0; border-bottom:1px solid #eee;">${i.naam} (${i.qty}x)</div>`).join("");
+    }
 }
-function toggleCart() { document.getElementById("cartDrawer").classList.toggle("open"); }
-function goToCheckout() { window.location.href = "reserveren.html"; }
-function closeModal() { document.getElementById("productModal").style.display = "none"; }
+
+window.toggleCart = () => document.getElementById("cartDrawer").classList.toggle("open");
+window.goToCheckout = () => window.location.href = "reserveren.html";
+window.closeModal = () => document.getElementById("productModal").style.display = "none";
