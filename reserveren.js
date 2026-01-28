@@ -1,4 +1,4 @@
-const SCRIPT_URL = "JOUW_NIEUWE_SCRIPT_URL"; 
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxm55dQjVHBP7HqQShVS4z2LfNLMJ9_lBYyDe0UiLB6I0eU3zWmFtyEXI8dpkn_Jpq31g/exec"; 
 const STORAGE_KEY = "h_botanica_cart";
 let cart = [];
 
