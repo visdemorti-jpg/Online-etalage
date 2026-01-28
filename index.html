@@ -25,33 +25,38 @@
 </section>
 
 <main class="container">
-    <div id="etalage" class="product-grid"></div>
+    <div id="etalage" class="product-grid">
+        </div>
 </main>
 
-<button id="floatingCart" onclick="toggleCart()" aria-label="Winkelmand">
-    <span class="cart-emoji">🦋</span>
+<button id="floatingCart" onclick="window.toggleCart()" aria-label="Winkelmand">
+    <span class="cart-icon">🦋</span>
     <span id="cartCount">0</span>
 </button>
 
 <div id="cartDrawer" class="cart-drawer">
     <div class="cart-header">
-        <h2>Winkelmand</h2>
-        <button onclick="toggleCart()" class="close-cart">Sluiten</button>
+        <h2>Jouw Winkelmandje</h2>
+        <button onclick="window.toggleCart()" class="close-cart">&times;</button>
     </div>
-    <div id="cartItems" class="cart-items-list"></div>
+    
+    <div id="cartItems" class="cart-items-list">
+        </div>
+
     <div class="cart-footer">
-        <div class="cart-total">
+        <div class="cart-total-row">
             <span>Totaal</span>
             <span id="cartTotal">€ 0,00</span>
         </div>
-        <button class="btn-reserve" onclick="goToCheckout()">Bestelling afronden</button>
+        <button class="btn-reserve" onclick="window.goToCheckout()">Bestelling Afronden</button>
     </div>
 </div>
 
 <div id="productModal" class="modal">
     <div class="modal-content">
-        <button class="close-button" onclick="closeModal()">Terug naar overzicht</button>
-        <div id="modalBody" class="modal-grid"></div>
+        <button class="close-button" onclick="window.closeModal()">&times;</button>
+        <div id="modalBody" class="modal-grid">
+            </div>
     </div>
 </div>
 
@@ -60,10 +65,6 @@
         <p>&copy; 2026 Huisje Botanica | Vlinderkunstwerkjes liefdevol met de hand gemaakt | Follow the butterflies</p>
     </div>
 </footer>
-
-<script src="app.js"></script>
-</body>
-</html>
 
 <script src="app.js"></script>
 </body>
