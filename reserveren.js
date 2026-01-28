@@ -8,15 +8,18 @@ function renderCheckout() {
     if(!container) return;
     container.innerHTML = "";
     let totaal = 0;
-    cart.forEach((item) => {
+    
+    cart.forEach((item, index) => {
         const prijs = parseFloat(String(item.prijs).replace(',', '.')) || 0;
-        totaal += prijs * item.qty;
-        container.innerHTML += `<div style="display:flex; justify-content:space-between; margin-bottom:1rem;">
-            <div>${item.naam} (${item.qty}x)</div>
-            <div>€ ${(prijs * item.qty).toFixed(2).replace('.', ',')}</div>
-        </div>`;
+        const sub = prijs * item.qty;
+        totaal += sub;
+        container.innerHTML += `
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem; padding-bottom:1rem; border-bottom:1px solid #eee;">
+                <div><strong>${item.naam}</strong><br><small>${item.qty}x € ${item.prijs}</small></div>
+                <div>€ ${sub.toFixed(2).replace('.', ',')}</div>
+            </div>`;
     });
-    totalEl.innerHTML = `Totaal: € ${totaal.toFixed(2).replace('.', ',')}`;
+    if(totalEl) totalEl.innerHTML = `Totaal: <span style="float:right;">€ ${totaal.toFixed(2).replace('.', ',')}</span>`;
 }
 
 document.getElementById("reserveerForm").addEventListener("submit", async function(e) {
@@ -33,7 +36,7 @@ document.getElementById("reserveerForm").addEventListener("submit", async functi
 
     try {
         // 1. Google Sheets update
-        fetch(SCRIPT_URL, {
+        await fetch(SCRIPT_URL, {
             method: "POST",
             mode: "no-cors",
             body: JSON.stringify({
@@ -44,7 +47,7 @@ document.getElementById("reserveerForm").addEventListener("submit", async functi
             })
         });
 
-        // 2. Email verzenden via EmailJS (met jouw IDs)
+        // 2. EmailJS verzending
         await emailjs.send("service_50mriqo", "template_h6htw8f", {
             order_nr: orderNr,
             klant_naam: klantNaam,
@@ -54,13 +57,12 @@ document.getElementById("reserveerForm").addEventListener("submit", async functi
             bericht: document.getElementById("bericht").value
         });
 
-        alert("Gelukt! Je reservatie is verwerkt en je ontvangt een bevestiging per e-mail.");
+        alert("Gelukt! Je reservatie is verwerkt. Controleer je e-mail.");
         localStorage.removeItem(STORAGE_KEY);
         window.location.href = "index.html";
 
     } catch (error) {
-        console.error("Fout:", error);
-        alert("Er is een fout opgetreden bij het verzenden.");
+        alert("Er ging iets mis. Probeer het opnieuw.");
         btn.disabled = false;
         btn.innerText = "Aanvraag Verzenden";
     }
