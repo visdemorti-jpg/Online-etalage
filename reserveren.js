@@ -1,5 +1,5 @@
 // VUL DEZE 3 DINGEN IN:
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycby3V_kygxORwQdB_wzcl4Sj4ZUUedfVh5yjy-Z3qY7qf7TnXOHjIr6pkRKB7a8bIlYPAg/execN";
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzCHDXUIvDsDuP0ITmUjMehM2lv7wcQXeLXBVyZqpT_66edVnolWliqab6cajVOx01WrA/exec";
 const EMAILJS_SERVICE = "service_50mriqo";
 const EMAILJS_TEMPLATE = "template_h6htw8f";
 
