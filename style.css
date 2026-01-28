@@ -27,8 +27,10 @@ body {
     text-align: center;
 }
 .logo {
-    max-width: 180px;
+    max-width: 216px; /* Dit is 20% groter dan de vorige 180px */
     height: auto;
+    display: block;
+    margin: 0 auto;
 }
 .tagline {
     font-size: 1.5rem; /* Grotere tekst zoals gevraagd */
