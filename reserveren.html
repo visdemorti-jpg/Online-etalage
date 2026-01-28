@@ -6,6 +6,14 @@
     <link rel="icon" type="image/png" href="https://portfoliohuisjebotanica.wordpress.com/wp-content/uploads/2026/01/cropped-logo-factuur.png">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="style.css">
+    
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+    <script type="text/javascript">
+       (function(){
+          // VUL HIERONDER JE PUBLIC KEY IN
+          emailjs.init("VUL_HIER_JE_PUBLIC_KEY");
+       })();
+    </script>
 </head>
 <body>
 
@@ -23,7 +31,7 @@
         <section>
             <h2 style="font-weight: 400; text-transform: uppercase; letter-spacing: 0.1em; font-size: 1rem; border-bottom: 1px solid var(--line); padding-bottom: 1rem;">Uw Winkelmand</h2>
             <div id="checkoutItems" style="margin-top: 2rem;"></div>
-            <div id="checkoutTotal" style="margin-top: 2rem; padding-top: 1rem; border-top: 1px solid var(--line); font-weight: 600; font-size: 1.1rem;"></div>
+            <div id="checkoutTotal" style="margin-top: 2rem; padding-top: 1rem; border-top: 1px solid var(--line); font-weight: 600; font-size: 1.1rem; text-align: right;"></div>
         </section>
 
         <section style="background: white; padding: 2.5rem; border: 1px solid var(--line); align-self: start;">
@@ -41,7 +49,7 @@
                     <label style="display: block; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.5rem; color: var(--muted);">Bericht (optioneel)</label>
                     <textarea id="bericht" rows="3" placeholder="Heeft u nog een vraag of opmerking?" style="width: 100%; padding: 0.8rem; border: 1px solid var(--line); outline: none; resize: none; font-family: inherit;"></textarea>
                 </div>
-                <button type="submit" id="submitBtn" class="btn-reserve">Aanvraag Verzenden via E-mail</button>
+                <button type="submit" id="submitBtn" class="btn-reserve">Bevestig Reservatie</button>
             </form>
         </section>
     </div>
@@ -49,7 +57,7 @@
 
 <footer class="site-footer">
     <div class="container">
-        <p>&copy; 2026 Huisje Botanica | Vlinderkunstwerkjes liefdevol met de hand gemaakt | Follow the butterflies</p>
+        <p>&copy; 2026 Huisje Botanica</p>
     </div>
 </footer>
 
