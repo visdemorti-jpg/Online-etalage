@@ -14,7 +14,6 @@ fetch(SHEET_URL)
       let obj = {};
       headers.forEach((h, i) => obj[h] = values[i] ? values[i].trim() : "");
       
-      // Voorraad berekenen op basis van jouw specifieke kolommen
       const voorraad = parseInt(obj["op voorraad"]) || 0;
       const gereserveerd = parseInt(obj["gereserveerd"]) || 0;
       obj.actueleVoorraad = voorraad - gereserveerd;
@@ -33,7 +32,7 @@ function renderShop() {
     grid.innerHTML = "";
 
     items.forEach(item => {
-        if (item.actueleVoorraad <= 0) return;
+        if (item.actueleVoorraad <= 0 || item.zichtbaar === "X") return;
         
         const div = document.createElement("div");
         div.className = "product-card";
@@ -44,7 +43,7 @@ function renderShop() {
             <h2>${item.naam}</h2>
             <div class="price">€ ${item.prijs}</div>
         `;
-        div.onclick = () => openDetails(item);
+        div.onclick = () => window.openDetails(item);
         grid.appendChild(div);
     });
 }
@@ -59,25 +58,26 @@ window.openDetails = function(item) {
     
     body.innerHTML = `
         <div class="modal-image">
-            <img src="${item["video/foto"]}" style="width:100%; border-radius:4px;">
+            <img src="${item["video/foto"]}" style="width:100%;">
         </div>
         <div class="modal-info">
-            <h1 style="text-transform:uppercase; font-size:1.2rem;">${item.naam}</h1>
+            <h1>${item.naam}</h1>
             <p style="color:var(--muted); font-size:0.9rem; margin:1rem 0;">${item.beschrijving || ""}</p>
-            <p class="price" style="font-size:1.1rem; font-weight:bold;">€ ${item.prijs}</p>
+            <p class="price">€ ${item.prijs}</p>
             <div class="qty-selector">
-                <button onclick="updateQty(-1, ${item.actueleVoorraad})">-</button>
+                <button onclick="window.updateQty(-1, ${item.actueleVoorraad})">-</button>
                 <span id="qtyVal">1</span>
-                <button onclick="updateQty(1, ${item.actueleVoorraad})">+</button>
+                <button onclick="window.updateQty(1, ${item.actueleVoorraad})">+</button>
             </div>
-            <button class="btn-reserve" onclick="addToCart('${item.id}')">In winkelmand</button>
+            <button class="btn-reserve" onclick="window.addToCart('${item.id}')">Toevoegen aan mandje</button>
         </div>`;
     modal.style.display = "block";
 };
 
 window.updateQty = function(change, max) {
     tempQty = Math.max(1, Math.min(tempQty + change, max));
-    document.getElementById("qtyVal").textContent = tempQty;
+    const valEl = document.getElementById("qtyVal");
+    if(valEl) valEl.textContent = tempQty;
 };
 
 // 4. Winkelmand Logica
@@ -93,30 +93,17 @@ window.addToCart = function(id) {
     
     localStorage.setItem("h_botanica_cart", JSON.stringify(cart));
     updateCartUI();
-    closeModal();
+    window.closeModal();
 };
 
 function updateCartUI() {
     const count = document.getElementById("cartCount");
     if (count) count.textContent = cart.reduce((s, i) => s + Number(i.qty), 0);
-    
-    const list = document.getElementById("cartItems");
-    if (list) {
-        list.innerHTML = cart.length === 0 ? "<p>Mandje is leeg</p>" : 
-            cart.map(i => `<div style="padding:10px 0; border-bottom:1px solid #eee; font-size:0.8rem;">
-                <strong>${i.naam}</strong><br>${i.qty}x - € ${i.prijs}
-            </div>`).join("");
-    }
 }
 
-// 5. Navigatie & Sluiten
+// 5. Navigatie
 window.toggleCart = () => document.getElementById("cartDrawer").classList.toggle("open");
 window.closeModal = () => document.getElementById("productModal").style.display = "none";
 window.goToCheckout = () => {
     if (cart.length > 0) window.location.href = "reserveren.html";
-    else alert("Winkelmand is leeg");
 };
-
-window.toggleCart = () => document.getElementById("cartDrawer").classList.toggle("open");
-window.goToCheckout = () => window.location.href = "reserveren.html";
-window.closeModal = () => document.getElementById("productModal").style.display = "none";
