@@ -33,7 +33,7 @@ body {
     margin: 0 auto;
 }
 .tagline {
-    font-size: 1.5rem; /* Grotere tekst zoals gevraagd */
+    font-size: 1rem; /* Grotere tekst zoals gevraagd */
     text-transform: uppercase;
     letter-spacing: 0.2em;
     color: var(--muted);
