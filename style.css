@@ -27,8 +27,8 @@ body {
     text-align: center;
 }
 .logo {
-    max-width: 216px; /* Dit is 20% groter dan de vorige 180px */
-    height: auto;
+    max-width: auto; /* Dit is 20% groter dan de vorige 180px */
+    height: 300px;
     display: block;
     margin: 0 auto;
 }
